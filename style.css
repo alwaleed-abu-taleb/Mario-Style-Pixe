@@ -1,0 +1,102 @@
+  html,body{margin:0;padding:0;height:100%;background:#0d0d12;overflow:hidden}
+  body{display:flex;align-items:center;justify-content:center}
+  canvas{image-rendering:pixelated;image-rendering:crisp-edges;background:#000}
+  canvas:fullscreen{width:100vw !important;height:100vh !important;object-fit:contain}
+
+  /* ---- epic title screen overlay ---- */
+  #titleUI{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;gap:14px;z-index:5;pointer-events:none;
+    transition:opacity .6s ease, transform .6s ease}
+  #titleUI.hidden{opacity:0;transform:translateY(-14px)}
+  #titleUI>*{pointer-events:auto}
+  #titleMsg{font-family:"Courier New",monospace;font-weight:bold;font-size:clamp(14px,2.6vw,22px);
+    color:#fff;letter-spacing:1px;text-align:center;
+    text-shadow:0 0 10px #ff6ec7,0 0 22px #ff6ec7,2px 2px 0 #000;
+    animation:msgPulse 1.6s ease-in-out infinite}
+  @keyframes msgPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+  #nameInput{font-family:"Courier New",monospace;font-weight:bold;font-size:clamp(16px,2.8vw,24px);
+    letter-spacing:3px;text-align:center;color:#fff;width:min(340px,72vw);padding:10px 14px;
+    background:rgba(8,10,32,.8);border:3px solid #fff;outline:none;border-radius:4px;
+    box-shadow:0 0 12px #48e0ff,inset 0 0 12px rgba(72,224,255,.35);
+    transition:box-shadow .2s,border-color .2s}
+  #nameInput::placeholder{color:rgba(255,255,255,.45);letter-spacing:2px}
+  #nameInput:focus{border-color:#48e0ff;box-shadow:0 0 22px #48e0ff,inset 0 0 16px rgba(72,224,255,.5)}
+  #startBtn{font-family:"Courier New",monospace;font-weight:bold;font-size:clamp(16px,2.8vw,24px);
+    letter-spacing:3px;color:#fff;padding:12px 34px;cursor:pointer;border:3px solid #fff;
+    border-radius:6px;background:linear-gradient(180deg,#ffd23f 0%,#ff8c1a 60%,#f05a28 100%);
+    box-shadow:0 0 14px rgba(255,180,40,.8),0 4px 0 #7c2d00;
+    transition:transform .15s,box-shadow .15s,filter .15s}
+  #startBtn:hover{transform:scale(1.09) rotate(-1deg);filter:brightness(1.12);
+    box-shadow:0 0 26px rgba(255,200,60,1),0 5px 0 #7c2d00}
+  #startBtn:active{transform:scale(.95);box-shadow:0 0 10px rgba(255,180,40,.8),0 1px 0 #7c2d00}
+
+  /* ---- name change popup (CHG button) ---- */
+  #nameModal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    background:rgba(0,0,0,.45);z-index:6;opacity:1;transition:opacity .2s ease}
+  #nameModal.hidden{opacity:0;pointer-events:none}
+  #nameModalBox{background:rgba(5,6,20,.92);border:3px solid #fff;border-radius:4px;
+    padding:16px 26px 18px;display:flex;flex-direction:column;align-items:center;gap:10px;
+    min-width:min(400px,86vw);box-shadow:0 0 28px rgba(0,0,0,.7),inset 0 0 18px rgba(72,224,255,.08);
+    font-family:"Courier New",monospace}
+  #nameModalTitle{color:#ffefad;font-weight:bold;letter-spacing:4px;font-size:15px;
+    text-shadow:2px 2px 0 #000}
+  #nameModalInput{font-family:"Courier New",monospace;font-weight:bold;
+    font-size:clamp(20px,3.2vw,30px);letter-spacing:3px;text-align:center;color:#fff;
+    width:100%;padding:8px 12px;background:rgba(8,10,32,.85);border:3px solid #fff;
+    outline:none;border-radius:4px;box-shadow:0 0 14px #48e0ff,inset 0 0 12px rgba(72,224,255,.35);
+    transition:box-shadow .2s,border-color .2s}
+  #nameModalInput:focus{border-color:#48e0ff;box-shadow:0 0 24px #48e0ff,inset 0 0 16px rgba(72,224,255,.5)}
+  #nameModalBtns{display:flex;gap:16px}
+  #nameModalBtns button{font-family:"Courier New",monospace;font-weight:bold;font-size:17px;
+    letter-spacing:2px;color:#fff;padding:8px 22px;cursor:pointer;border:3px solid #fff;
+    border-radius:5px;transition:transform .12s,filter .12s,box-shadow .12s}
+  #nameSave{background:linear-gradient(180deg,#5ce05c 0%,#2ea82e 70%,#116611 100%);
+    box-shadow:0 0 12px rgba(90,230,90,.7),0 3px 0 #0a3d0a}
+  #nameCancel{background:linear-gradient(180deg,#ff6a5c 0%,#d03028 70%,#8c1410 100%);
+    box-shadow:0 0 12px rgba(255,110,90,.7),0 3px 0 #4d0a06}
+  #nameModalBtns button:hover{transform:scale(1.08);filter:brightness(1.15)}
+  #nameModalBtns button:active{transform:scale(.94)}
+
+  /* ---- mobile / tablet touch controls (hidden on desktop) ---- */
+  #touchUI{position:fixed;left:0;right:0;bottom:0;z-index:4;
+    display:flex;justify-content:space-between;align-items:flex-end;gap:10px;
+    padding:14px 16px calc(12px + env(safe-area-inset-bottom,0px));
+    background:linear-gradient(180deg,rgba(8,10,32,0) 0%,rgba(8,10,32,.55) 42%,rgba(8,10,32,.9) 100%);
+    touch-action:none;overscroll-behavior:contain;
+    user-select:none;-webkit-user-select:none;
+    opacity:0;visibility:hidden;pointer-events:none;
+    transition:opacity .22s ease,visibility .22s ease}
+  #touchUI.show{opacity:1;visibility:visible;pointer-events:auto}
+  .trow{display:flex;align-items:flex-end;gap:12px}
+  .tbtn{font-family:"Courier New",monospace;font-weight:bold;color:#fff;
+    width:64px;height:64px;font-size:18px;letter-spacing:1px;
+    border:3px solid #fff;border-radius:10px;cursor:pointer;
+    touch-action:none;user-select:none;-webkit-user-select:none;
+    -webkit-tap-highlight-color:transparent;
+    transition:transform .07s ease,filter .07s ease,box-shadow .07s ease}
+  .tjump{width:84px;height:84px;font-size:17px}
+  .tgold{background:linear-gradient(180deg,#ffd23f 0%,#ff8c1a 60%,#f05a28 100%);
+    box-shadow:0 0 10px rgba(255,180,40,.65),0 4px 0 #7c2d00}
+  .tgreen{background:linear-gradient(180deg,#5ce05c 0%,#2ea82e 70%,#116611 100%);
+    box-shadow:0 0 12px rgba(90,230,90,.7),0 5px 0 #0a3d0a}
+  .tblue{width:72px;font-size:13px;
+    background:linear-gradient(180deg,#48e0ff 0%,#2870c8 70%,#12409c 100%);
+    box-shadow:0 0 10px rgba(72,224,255,.65),0 4px 0 #0a2d5c}
+  .tbtn.pressed,.tbtn:active{transform:scale(.88);filter:brightness(1.45);
+    box-shadow:0 0 6px rgba(255,255,255,.35),0 1px 0 rgba(0,0,0,.6)}
+  /* phones: bigger, clearer buttons */
+  @media (max-width:768px){
+    #touchUI{padding:16px 14px calc(14px + env(safe-area-inset-bottom,0px))}
+    .trow{gap:14px}
+    .tbtn{width:76px;height:76px;font-size:21px}
+    .tjump{width:96px;height:96px;font-size:19px}
+    .tblue{width:80px;font-size:14px}
+  }
+  /* narrow phones (<=520px): shrink so the whole pad fits on screen */
+  @media (max-width:520px){
+    #touchUI{padding:12px 10px calc(10px + env(safe-area-inset-bottom,0px))}
+    .trow{gap:10px}
+    .tbtn{width:64px;height:64px;font-size:19px}
+    .tjump{width:78px;height:78px;font-size:16px}
+    .tblue{width:64px;font-size:12px}
+  }
