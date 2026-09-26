@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>PIXEL HERO — 16-bit Platformer</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="game" width="480" height="272"></canvas>
+<div id="titleUI">
+  <div id="titleMsg">There is no Mario, You are Mario &#10084;&#65039;</div>
+  <input id="nameInput" maxlength="12" placeholder="Enter your name..." autocomplete="off" spellcheck="false">
+  <button id="startBtn">&gt; START GAME &lt;</button>
+</div>
+<div id="nameModal" class="hidden">
+  <div id="nameModalBox">
+    <div id="nameModalTitle">CHANGE NAME</div>
+    <input id="nameModalInput" maxlength="12" placeholder="Enter your name..." autocomplete="off" spellcheck="false">
+    <div id="nameModalBtns">
+      <button id="nameSave">SAVE</button>
+      <button id="nameCancel">CANCEL</button>
+    </div>
+  </div>
+</div>
+<div id="touchUI">
+  <div class="trow">
+    <button id="btnLeft" class="tbtn tgold" type="button" aria-label="Move left">&#9664;</button>
+    <button id="btnRight" class="tbtn tgold" type="button" aria-label="Move right">&#9654;</button>
+  </div>
+  <div class="trow">
+    <button id="btnPause" class="tbtn tblue" type="button" aria-label="Pause">PAUSE</button>
+    <button id="btnJump" class="tbtn tjump tgreen" type="button" aria-label="Jump">JUMP</button>
+  </div>
+</div>
+<script src="src/game.js"></script>
+</body>
+</html>
