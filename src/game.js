@@ -200,6 +200,7 @@ try { highScore = parseInt(localStorage.getItem("pixeldash_hs") || "0", 10) || 0
 
 const TITLE = 0, PLAY = 1, FLAGSEQ = 2, COMPLETE = 3, DEAD = 4, OVER = 5, WIN = 6;
 let paused = false;
+let muted = false;
 
 const player = {
   x: 0, y: 0, vx: 0, vy: 0, w: 10, h: 22, face: 1,
@@ -504,6 +505,10 @@ function burst(x, y, col, n) {
 // ------------------------------------------------------------------ update
 function update() {
   frame++;
+  window.gamePaused = paused;
+  window.gameNamePopupOpen = namePopupOpen;
+  window.gameState = state;
+  window.gameMuted = muted;
   if (state === PLAY && namePopupOpen) return;   // frozen while the name modal is up
   if (state === PLAY) updatePlay();
   else if (state === DEAD) updateDead();
