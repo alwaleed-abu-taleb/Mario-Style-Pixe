@@ -14,6 +14,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>PIXEL HERO — 16-bit Platformer</title>
 <style>
   html,body{margin:0;padding:0;height:100%;background:#0d0d12;overflow:hidden}
@@ -47,6 +48,77 @@
   #startBtn:hover{transform:scale(1.09) rotate(-1deg);filter:brightness(1.12);
     box-shadow:0 0 26px rgba(255,200,60,1),0 5px 0 #7c2d00}
   #startBtn:active{transform:scale(.95);box-shadow:0 0 10px rgba(255,180,40,.8),0 1px 0 #7c2d00}
+
+  /* ---- name change popup (CHG button) ---- */
+  #nameModal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    background:rgba(0,0,0,.45);z-index:6;opacity:1;transition:opacity .2s ease}
+  #nameModal.hidden{opacity:0;pointer-events:none}
+  #nameModalBox{background:rgba(5,6,20,.92);border:3px solid #fff;border-radius:4px;
+    padding:16px 26px 18px;display:flex;flex-direction:column;align-items:center;gap:10px;
+    min-width:min(400px,86vw);box-shadow:0 0 28px rgba(0,0,0,.7),inset 0 0 18px rgba(72,224,255,.08);
+    font-family:"Courier New",monospace}
+  #nameModalTitle{color:#ffefad;font-weight:bold;letter-spacing:4px;font-size:15px;
+    text-shadow:2px 2px 0 #000}
+  #nameModalInput{font-family:"Courier New",monospace;font-weight:bold;
+    font-size:clamp(20px,3.2vw,30px);letter-spacing:3px;text-align:center;color:#fff;
+    width:100%;padding:8px 12px;background:rgba(8,10,32,.85);border:3px solid #fff;
+    outline:none;border-radius:4px;box-shadow:0 0 14px #48e0ff,inset 0 0 12px rgba(72,224,255,.35);
+    transition:box-shadow .2s,border-color .2s}
+  #nameModalInput:focus{border-color:#48e0ff;box-shadow:0 0 24px #48e0ff,inset 0 0 16px rgba(72,224,255,.5)}
+  #nameModalBtns{display:flex;gap:16px}
+  #nameModalBtns button{font-family:"Courier New",monospace;font-weight:bold;font-size:17px;
+    letter-spacing:2px;color:#fff;padding:8px 22px;cursor:pointer;border:3px solid #fff;
+    border-radius:5px;transition:transform .12s,filter .12s,box-shadow .12s}
+  #nameSave{background:linear-gradient(180deg,#5ce05c 0%,#2ea82e 70%,#116611 100%);
+    box-shadow:0 0 12px rgba(90,230,90,.7),0 3px 0 #0a3d0a}
+  #nameCancel{background:linear-gradient(180deg,#ff6a5c 0%,#d03028 70%,#8c1410 100%);
+    box-shadow:0 0 12px rgba(255,110,90,.7),0 3px 0 #4d0a06}
+  #nameModalBtns button:hover{transform:scale(1.08);filter:brightness(1.15)}
+  #nameModalBtns button:active{transform:scale(.94)}
+
+  /* ---- mobile / tablet touch controls (hidden on desktop) ---- */
+  #touchUI{position:fixed;left:0;right:0;bottom:0;z-index:4;
+    display:flex;justify-content:space-between;align-items:flex-end;gap:10px;
+    padding:14px 16px calc(12px + env(safe-area-inset-bottom,0px));
+    background:linear-gradient(180deg,rgba(8,10,32,0) 0%,rgba(8,10,32,.55) 42%,rgba(8,10,32,.9) 100%);
+    touch-action:none;overscroll-behavior:contain;
+    user-select:none;-webkit-user-select:none;
+    opacity:0;visibility:hidden;pointer-events:none;
+    transition:opacity .22s ease,visibility .22s ease}
+  #touchUI.show{opacity:1;visibility:visible;pointer-events:auto}
+  .trow{display:flex;align-items:flex-end;gap:12px}
+  .tbtn{font-family:"Courier New",monospace;font-weight:bold;color:#fff;
+    width:64px;height:64px;font-size:18px;letter-spacing:1px;
+    border:3px solid #fff;border-radius:10px;cursor:pointer;
+    touch-action:none;user-select:none;-webkit-user-select:none;
+    -webkit-tap-highlight-color:transparent;
+    transition:transform .07s ease,filter .07s ease,box-shadow .07s ease}
+  .tjump{width:84px;height:84px;font-size:17px}
+  .tgold{background:linear-gradient(180deg,#ffd23f 0%,#ff8c1a 60%,#f05a28 100%);
+    box-shadow:0 0 10px rgba(255,180,40,.65),0 4px 0 #7c2d00}
+  .tgreen{background:linear-gradient(180deg,#5ce05c 0%,#2ea82e 70%,#116611 100%);
+    box-shadow:0 0 12px rgba(90,230,90,.7),0 5px 0 #0a3d0a}
+  .tblue{width:72px;font-size:13px;
+    background:linear-gradient(180deg,#48e0ff 0%,#2870c8 70%,#12409c 100%);
+    box-shadow:0 0 10px rgba(72,224,255,.65),0 4px 0 #0a2d5c}
+  .tbtn.pressed,.tbtn:active{transform:scale(.88);filter:brightness(1.45);
+    box-shadow:0 0 6px rgba(255,255,255,.35),0 1px 0 rgba(0,0,0,.6)}
+  /* phones: bigger, clearer buttons */
+  @media (max-width:768px){
+    #touchUI{padding:16px 14px calc(14px + env(safe-area-inset-bottom,0px))}
+    .trow{gap:14px}
+    .tbtn{width:76px;height:76px;font-size:21px}
+    .tjump{width:96px;height:96px;font-size:19px}
+    .tblue{width:80px;font-size:14px}
+  }
+  /* narrow phones (<=520px): shrink so the whole pad fits on screen */
+  @media (max-width:520px){
+    #touchUI{padding:12px 10px calc(10px + env(safe-area-inset-bottom,0px))}
+    .trow{gap:10px}
+    .tbtn{width:64px;height:64px;font-size:19px}
+    .tjump{width:78px;height:78px;font-size:16px}
+    .tblue{width:64px;font-size:12px}
+  }
 </style>
 </head>
 <body>
@@ -55,6 +127,26 @@
   <div id="titleMsg">There is no Mario, You are Mario &#10084;&#65039;</div>
   <input id="nameInput" maxlength="12" placeholder="Enter your name..." autocomplete="off" spellcheck="false">
   <button id="startBtn">&gt; START GAME &lt;</button>
+</div>
+<div id="nameModal" class="hidden">
+  <div id="nameModalBox">
+    <div id="nameModalTitle">CHANGE NAME</div>
+    <input id="nameModalInput" maxlength="12" placeholder="Enter your name..." autocomplete="off" spellcheck="false">
+    <div id="nameModalBtns">
+      <button id="nameSave">SAVE</button>
+      <button id="nameCancel">CANCEL</button>
+    </div>
+  </div>
+</div>
+<div id="touchUI">
+  <div class="trow">
+    <button id="btnLeft" class="tbtn tgold" type="button" aria-label="Move left">&#9664;</button>
+    <button id="btnRight" class="tbtn tgold" type="button" aria-label="Move right">&#9654;</button>
+  </div>
+  <div class="trow">
+    <button id="btnPause" class="tbtn tblue" type="button" aria-label="Pause">PAUSE</button>
+    <button id="btnJump" class="tbtn tjump tgreen" type="button" aria-label="Jump">JUMP</button>
+  </div>
 </div>
 <script>
 "use strict";
@@ -101,6 +193,63 @@ function beginFromTitle() {
 startBtn.addEventListener("click", beginFromTitle);
 nameInput.addEventListener("keydown", e => {
   if (e.key === "Enter") { e.stopPropagation(); beginFromTitle(); }
+});
+
+// ---- CHG button (in-HUD name change) ----
+const CHG = { x: 368, y: 7, w: 20, h: 15 };
+const nameModal = document.getElementById("nameModal");
+const nameModalInput = document.getElementById("nameModalInput");
+let namePopupOpen = false;
+let nameFlash = 0;
+function openNamePopup() {
+  if (state !== PLAY || paused || namePopupOpen) return;
+  namePopupOpen = true;
+  nameModalInput.value = playerName === "PLAYER" ? "" : playerName;
+  nameModal.classList.remove("hidden");
+  SFX.pause();
+  setTimeout(() => nameModalInput.focus(), 60);
+}
+function closeNamePopup(save) {
+  if (!namePopupOpen) return;
+  if (save) {
+    const n = (nameModalInput.value || "").trim().toUpperCase().slice(0, 12);
+    if (n && n !== playerName) {
+      playerName = n;
+      try { localStorage.setItem("pixeldash_name", n); } catch (e) {}
+      nameFlash = 50;
+      SFX.power();
+    } else SFX.bump();
+  } else SFX.bump();
+  namePopupOpen = false;
+  nameModal.classList.add("hidden");
+  nameModalInput.blur();
+  for (const k of Object.keys(keys)) keys[k] = false;
+  jumpEdge = false;
+}
+document.getElementById("nameSave").addEventListener("click", () => closeNamePopup(true));
+document.getElementById("nameCancel").addEventListener("click", () => closeNamePopup(false));
+nameModalInput.addEventListener("keydown", e => {
+  e.stopPropagation();
+  if (e.key === "Enter") closeNamePopup(true);
+  if (e.key === "Escape") closeNamePopup(false);
+});
+function canvasPoint(e) {
+  const r = cvs.getBoundingClientRect();
+  return { x: (e.clientX - r.left) / r.width * VW, y: (e.clientY - r.top) / r.height * VH };
+}
+cvs.addEventListener("click", e => {
+  const p = canvasPoint(e);
+  if (state === PLAY && !paused && !namePopupOpen &&
+      p.x >= CHG.x && p.x <= CHG.x + CHG.w && p.y >= CHG.y && p.y <= CHG.y + CHG.h) {
+    initAudio();
+    openNamePopup();
+  }
+});
+cvs.addEventListener("mousemove", e => {
+  const p = canvasPoint(e);
+  const over = state === PLAY && !paused && !namePopupOpen &&
+    p.x >= CHG.x && p.x <= CHG.x + CHG.w && p.y >= CHG.y && p.y <= CHG.y + CHG.h;
+  cvs.style.cursor = over ? "pointer" : "default";
 });
 
 // ------------------------------------------------------------------ palette
@@ -182,7 +331,7 @@ const SPB = 0.21;
 let mStep = 0, mNext = 0;
 const mf = m => 440 * Math.pow(2, (m - 69) / 12);
 setInterval(() => {
-  if (!AC || muted || paused || (state !== PLAY && state !== FLAGSEQ && state !== TITLE)) return;
+  if (!AC || muted || paused || namePopupOpen || (state !== PLAY && state !== FLAGSEQ && state !== TITLE)) return;
   const ahead = AC.currentTime + 0.35;
   if (mNext < AC.currentTime - 0.5) mNext = AC.currentTime + 0.05;
   while (mNext < ahead) {
@@ -857,8 +1006,12 @@ const keys = {};
 let jumpEdge = false;
 addEventListener("keydown", e => {
   initAudio();
-  if (e.target === nameInput) return;   // typing your name is not gameplay input
+  if (e.target === nameInput || e.target === nameModalInput) return; // typing a name, not playing
   const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+  if (namePopupOpen) {                 // modal owns the keyboard
+    if (k === "Escape") closeNamePopup(false);
+    return;
+  }
   if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", " "].includes(e.key)) e.preventDefault();
   if (!e.repeat) {
     if (k === "ArrowUp" || k === "w" || k === " ") jumpEdge = true;
@@ -878,7 +1031,78 @@ addEventListener("keyup", e => {
   const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
   keys[k] = false;
 });
-addEventListener("blur", () => { if (state === PLAY) paused = true; });
+addEventListener("blur", () => {
+  if (state === PLAY && !namePopupOpen) paused = true;
+  for (const k of Object.keys(keys)) keys[k] = false;   // no stuck keys on focus loss
+  jumpEdge = false;
+});
+
+// ------------------------------------------------------------------ touch controls (mobile / tablet)
+// On-screen buttons feed the very same keys/jumpEdge the keyboard uses, so the
+// game logic is untouched. Physical keyboard keeps working in parallel (hybrid).
+const mqTouch = matchMedia("(max-width:1024px)");        // tablet + phones show buttons
+let touchUIOn = mqTouch.matches;
+function onMqTouch(e) { touchUIOn = e.matches; }
+if (mqTouch.addEventListener) mqTouch.addEventListener("change", onMqTouch);
+else if (mqTouch.addListener) mqTouch.addListener(onMqTouch);  // older Safari
+
+const touchUI = document.getElementById("touchUI");
+const tBtns = [
+  { el: document.getElementById("btnLeft"),  hold: "ArrowLeft" },
+  { el: document.getElementById("btnRight"), hold: "ArrowRight" },
+  { el: document.getElementById("btnJump"),  hold: " ", jump: true },   // " " = Space (hold = higher jump)
+  { el: document.getElementById("btnPause"), pause: true },
+];
+function touchTogglePause() {
+  if (state === PLAY) {
+    paused = !paused;
+    SFX.pause();
+    if (!paused) musicReset();
+  } else onEnter();   // doubles as the confirm key on end screens (no keyboard on mobile)
+}
+for (const b of tBtns) {
+  const el = b.el;
+  el.addEventListener("pointerdown", e => {
+    e.preventDefault();                        // block scroll / double-tap zoom
+    initAudio();
+    if (namePopupOpen) return;                 // name modal owns input
+    try { el.setPointerCapture(e.pointerId); } catch (err) {}   // multi-touch: each button keeps its own pointer
+    el.classList.add("pressed");
+    if (b.hold) keys[b.hold] = true;
+    if (b.jump) jumpEdge = true;               // one tap = one jump (edge, like Space)
+    if (b.pause) touchTogglePause();
+    b.active = true;
+    b.pointerId = e.pointerId;
+  });
+  const release = e => {
+    if (e && e.cancelable) e.preventDefault();
+    el.classList.remove("pressed");
+    if (b.hold) keys[b.hold] = false;
+    b.active = false;
+  };
+  el.addEventListener("pointerup", release);
+  el.addEventListener("pointercancel", release);
+  el.addEventListener("lostpointercapture", release);
+}
+// show the bar only on touch-sized screens and never on the title screen;
+// also releases any touch-held key if the bar vanishes mid-press
+function syncTouchUI() {
+  const show = touchUIOn && state !== TITLE;
+  touchUI.classList.toggle("show", show);
+  touchUI.setAttribute("aria-hidden", show ? "false" : "true");
+  if (!show) for (const b of tBtns)
+    if (b.active) { if (b.hold) keys[b.hold] = false; b.active = false; b.el.classList.remove("pressed"); }
+}
+// safety net: if a pointerup/pointercancel is ever missed by a button (browser
+// gesture takeover, app switch, ...), clear any held touch key so it can't stick
+addEventListener("pointerup", e => {
+  for (const b of tBtns)
+    if (b.active && b.pointerId === e.pointerId) { if (b.hold) keys[b.hold] = false; b.active = false; b.el.classList.remove("pressed"); }
+});
+addEventListener("pointercancel", e => {
+  for (const b of tBtns)
+    if (b.active && b.pointerId === e.pointerId) { if (b.hold) keys[b.hold] = false; b.active = false; b.el.classList.remove("pressed"); }
+});
 
 function onEnter() {
   if (state === TITLE) beginFromTitle();
@@ -1014,6 +1238,7 @@ function burst(x, y, col, n) {
 // ------------------------------------------------------------------ update
 function update() {
   frame++;
+  if (state === PLAY && namePopupOpen) return;   // frozen while the name modal is up
   if (state === PLAY) updatePlay();
   else if (state === DEAD) updateDead();
   else if (state === FLAGSEQ) updateFlag();
@@ -1066,14 +1291,22 @@ function updatePlay() {
   if (p.vy > 7.5) p.vy = 7.5;
 
   const wasGrounded = p.grounded;
+  const fallV = p.vy;
   moveEntX(p);
   moveEntY(p, true);
-  if (!wasGrounded && p.grounded)
-    for (let i = 0; i < 3; i++)
-      parts.push({ x: p.x + 3 + i * 3, y: p.y + p.h - 2, vx: (Math.random() - 0.5), vy: -Math.random() * 0.6, g: 0.05, life: 14, col: PAL.cloudSh, size: 1 });
+  if (!wasGrounded && p.grounded) {                  // landing puffs (bigger after long falls)
+    const hard = fallV > 5.5;
+    const n = hard ? 8 : 3;
+    for (let i = 0; i < n; i++)
+      parts.push({
+        x: p.x + 2 + Math.random() * (p.w - 4), y: p.y + p.h - 2,
+        vx: (Math.random() - 0.5) * (hard ? 2.4 : 1), vy: -Math.random() * (hard ? 1.5 : 0.6),
+        g: 0.05, life: hard ? 20 : 14, col: hard ? PAL.white : PAL.cloudSh, size: hard ? 2 : 1,
+      });
+  }
   // dust while running / skidding
-  if (p.grounded && Math.abs(p.vx) > 1.3 && frame % 8 === 0)
-    parts.push({ x: p.x + (p.vx > 0 ? 1 : p.w - 1), y: p.y + p.h - 2, vx: -p.vx * 0.25, vy: -0.4, g: 0.04, life: 12, col: PAL.cloudSh, size: 1 });
+  if (p.grounded && Math.abs(p.vx) > 1.2 && frame % 5 === 0)
+    parts.push({ x: p.x + (p.vx > 0 ? 1 : p.w - 1), y: p.y + p.h - 2, vx: -p.vx * 0.3, vy: -0.5 - Math.random() * 0.2, g: 0.04, life: 14, col: PAL.cloudSh, size: Math.random() < 0.3 ? 2 : 1 });
   if (p.grounded && ((left && p.vx > 0.9) || (right && p.vx < -0.9)) && frame % 3 === 0)
     parts.push({ x: p.x + p.w / 2, y: p.y + p.h - 2, vx: (Math.random() - 0.5) * 0.8, vy: -0.9, g: 0.05, life: 14, col: PAL.white, size: 1 });
   if (Math.abs(p.vx) > 0.25) p.animT++;
@@ -1310,6 +1543,7 @@ function heroFrame() {
 
 function render() {
   titleUI.classList.toggle("hidden", state !== TITLE);
+  syncTouchUI();
   ctx.clearRect(0, 0, VW, VH);
   if (state === TITLE) { renderTitle(); return; }
 
@@ -1385,12 +1619,23 @@ function render() {
   if (state === COMPLETE) drawComplete();
   if (state === OVER) drawOver();
   if (state === WIN) drawWin();
-  if (state === PLAY && !paused && worldIx === 0 && hintT < 480) drawKeyHints();
+  if (state === PLAY && !paused && worldIx === 0 && hintT < 480 && !touchUIOn) drawKeyHints();
 }
 
 function drawHUD() {
   ctx.fillStyle = "rgba(0,0,0,0.25)"; ctx.fillRect(0, 0, VW, 30);
-  text(ctx, "PLAYER: " + playerName.slice(0, 12), 8, 4, 1, PAL.goldL, PAL.black);
+  // player name: gold, drawn twice for a slightly bolder look, with change animation
+  const nameStr = "PLAYER: " + playerName.slice(0, 12);
+  const nameCol = nameFlash > 0 && Math.floor(nameFlash / 4) % 2 === 0 ? PAL.white : PAL.goldL;
+  text(ctx, nameStr, 8, 4, 1, nameCol, PAL.black);
+  text(ctx, nameStr, 8, 5, 1, nameCol);
+  ctx.fillStyle = "rgba(255,239,173,0.35)";                 // separator under the name
+  ctx.fillRect(8, 14, nameStr.length * 6 - 1, 1);
+  if (nameFlash > 0) {                                      // gold sweep on change
+    ctx.fillStyle = PAL.goldL;
+    ctx.fillRect(8, 14, Math.max(1, Math.round((nameFlash / 50) * nameStr.length * 6)), 1);
+    nameFlash--;
+  }
   text(ctx, "SCORE " + String(score).padStart(6, "0"), 8, 17, 1, PAL.white, PAL.black);
   ctx.drawImage(COIN_F[Math.floor(frame / 7) % 4], 100, 15);
   text(ctx, "X" + String(coinCount).padStart(2, "0"), 112, 17, 1, PAL.goldL, PAL.black);
@@ -1401,6 +1646,16 @@ function drawHUD() {
   text(ctx, "X" + lives, 330, 17, 1, PAL.white, PAL.black);
   if (player.shield) ctx.drawImage(MINI_SHIELD, 346, 16);
   if (player.star > 0 && frame % 8 < 5) ctx.drawImage(MINI_STAR, 358, 16);
+  // CHG button (opens the name-change popup) with a soft pulsing glow
+  const pulse = 0.85 + 0.15 * Math.sin(frame / 48);         // 0.8s cycle
+  const grow = 1 + Math.round(pulse);
+  ctx.globalAlpha = 0.15 + 0.35 * pulse * pulse;
+  ctx.fillStyle = PAL.goldL;
+  ctx.fillRect(CHG.x - grow, CHG.y - grow, CHG.w + grow * 2, CHG.h + grow * 2);
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = PAL.goldD; ctx.fillRect(CHG.x, CHG.y, CHG.w, CHG.h);
+  ctx.fillStyle = PAL.goldL; ctx.fillRect(CHG.x + 1, CHG.y + 1, CHG.w - 2, CHG.h - 2);
+  text(ctx, "CHG", CHG.x + 2, CHG.y + 4, 1, PAL.black);
 }
 
 function keycap(x, y, w, label, arrow) {
@@ -1470,7 +1725,8 @@ function levelPreview(ix) {
 function drawComplete() {
   ctx.fillStyle = "rgba(0,0,0,0.6)"; ctx.fillRect(0, 48, VW, 172);
   text(ctx, "LEVEL COMPLETE!", VW / 2 - 108, 56, 2, PAL.goldL, PAL.black);
-  text(ctx, "WELL DONE, " + playerName + "!", VW / 2 - 66, 80, 1, PAL.white, PAL.black);
+  const congrats = "CONGRATULATIONS " + playerName + "!";
+  text(ctx, congrats, Math.floor(VW / 2 - congrats.length * 3), 80, 1, PAL.white, PAL.black);
   text(ctx, "WORLD " + level.name + " CLEARED", VW / 2 - 76, 94, 1, PAL.white, PAL.black);
   text(ctx, "CLEAR BONUS +500", VW / 2 - 52, 108, 1, PAL.white, PAL.black);
   text(ctx, "TIME BONUS +" + flagAnim.timeBonus, VW / 2 - 52, 120, 1, PAL.white, PAL.black);
@@ -1490,11 +1746,12 @@ function drawComplete() {
 }
 function drawOver() {
   ctx.fillStyle = "rgba(0,0,0,0.65)"; ctx.fillRect(0, 0, VW, VH);
-  text(ctx, "GAME OVER", VW / 2 - 65, 70, 3, PAL.red, PAL.black);
-  text(ctx, "NICE TRY, " + playerName + "!", VW / 2 - 62, 112, 1, PAL.white, PAL.black);
-  text(ctx, "SCORE " + String(score).padStart(6, "0"), VW / 2 - 45, 132, 1, PAL.white, PAL.black);
-  text(ctx, "HIGH SCORE " + String(highScore).padStart(6, "0"), VW / 2 - 53, 146, 1, PAL.goldL, PAL.black);
-  if (Math.floor(stateT / 24) % 2 === 0) text(ctx, "PRESS ENTER TO TRY AGAIN", VW / 2 - 84, 178, 1, PAL.white, PAL.black);
+  const big = playerName + " - GAME OVER";
+  text(ctx, big, Math.floor(VW / 2 - big.length * 6), 66, 2, PAL.red, PAL.black);
+  text(ctx, "SCORE " + String(score).padStart(6, "0"), VW / 2 - 45, 120, 1, PAL.white, PAL.black);
+  text(ctx, "HIGH SCORE " + String(highScore).padStart(6, "0"), VW / 2 - 53, 134, 1, PAL.goldL, PAL.black);
+  text(ctx, "TIP: PRESS THE CHG BUTTON TO CHANGE YOUR NAME", VW / 2 - 152, 152, 1, "rgba(248,248,248,0.7)");
+  if (Math.floor(stateT / 24) % 2 === 0) text(ctx, "PRESS ENTER TO TRY AGAIN", VW / 2 - 84, 176, 1, PAL.white, PAL.black);
 }
 function drawWin() {
   ctx.fillStyle = "rgba(0,0,0,0.6)"; ctx.fillRect(0, 0, VW, VH);
@@ -1551,11 +1808,21 @@ function renderTitle() {
   }
   text(ctx, "A 16-BIT PLATFORMER", VW / 2 - 70, 62, 2, PAL.white, PAL.black);
 
-  text(ctx, "CONTROLS", VW / 2 - 30, 176, 1, PAL.goldL, PAL.black);
-  text(ctx, "ARROWS OR WASD - MOVE   UP/W/SPACE - JUMP (HOLD = HIGHER)", VW / 2 - 195, 190, 1, PAL.white, PAL.black);
-  text(ctx, "STOMP ENEMIES +200   COINS +100   CLEAR +500 + TIME BONUS", VW / 2 - 195, 200, 1, PAL.white, PAL.black);
-  text(ctx, "P - PAUSE   M - MUSIC " + (muted ? "OFF" : "ON") + "   F - FULLSCREEN", VW / 2 - 123, 210, 1, PAL.white, PAL.black);
-  text(ctx, "HIGH SCORE " + String(highScore).padStart(6, "0"), VW / 2 - 53, 224, 1, PAL.goldL, PAL.black);
+  if (touchUIOn) {
+    const tapA = 0.55 + 0.45 * Math.abs(Math.sin(frame / 22));
+    ctx.globalAlpha = tapA;
+    text(ctx, "TAP TO PLAY", VW / 2 - 33, 176, 1, PAL.goldL, PAL.black);
+    ctx.globalAlpha = 1;
+    text(ctx, "ON-SCREEN BUTTONS: MOVE - JUMP - PAUSE", VW / 2 - 111, 190, 1, PAL.white, PAL.black);
+    text(ctx, "STOMP ENEMIES +200   COINS +100   CLEAR +500 + TIME BONUS", VW / 2 - 195, 200, 1, PAL.white, PAL.black);
+    text(ctx, "HIGH SCORE " + String(highScore).padStart(6, "0"), VW / 2 - 53, 224, 1, PAL.goldL, PAL.black);
+  } else {
+    text(ctx, "CONTROLS", VW / 2 - 30, 176, 1, PAL.goldL, PAL.black);
+    text(ctx, "ARROWS OR WASD - MOVE   UP/W/SPACE - JUMP (HOLD = HIGHER)", VW / 2 - 195, 190, 1, PAL.white, PAL.black);
+    text(ctx, "STOMP ENEMIES +200   COINS +100   CLEAR +500 + TIME BONUS", VW / 2 - 195, 200, 1, PAL.white, PAL.black);
+    text(ctx, "P - PAUSE   M - MUSIC " + (muted ? "OFF" : "ON") + "   F - FULLSCREEN", VW / 2 - 123, 210, 1, PAL.white, PAL.black);
+    text(ctx, "HIGH SCORE " + String(highScore).padStart(6, "0"), VW / 2 - 53, 224, 1, PAL.goldL, PAL.black);
+  }
   ctx.fillStyle = "rgba(0,0,0,0.25)"; ctx.fillRect(0, VH - 16, VW, 16);
   text(ctx, "MUSHROOM: 1UP   STAR: INVINCIBLE   SHIELD: BLOCKS A HIT", VW / 2 - 175, VH - 11, 1, PAL.white, PAL.black);
 }
@@ -1573,6 +1840,7 @@ window.G = {
   get grid() { return grid; }, get keys() { return keys; }, get flag() { return flag; },
   get level() { return level; }, get jumpEdge() { return jumpEdge; }, set jumpEdge(v) { jumpEdge = v; },
   get playerName() { return playerName; }, set playerName(v) { playerName = v; },
+  get namePopupOpen() { return namePopupOpen; },
   start: startGame, load: loadLevel,
 };
 let last = 0, accum = 0;
