@@ -174,6 +174,7 @@ function mkPlant(x, y)  { return { x: x * T + 9, topY: y * T, h: 0, state: 0, t:
 
 function startGame() {
   score = 0; lives = 3; coinCount = 0;
+  applyCharacterData(CharacterData);
   loadLevel(0);
   state = PLAY; paused = false;
   musicReset();
@@ -718,7 +719,7 @@ function drawSpriteC(img, x, y, flip) {
 
 function heroFrame() {
   const p = player;
-  const set = (p.star > 0 && Math.floor(frame / 3) % 2 === 0) ? HERO_G : HERO;
+  const set = (p.star > 0 && Math.floor(frame / 3) % 2 === 0) ? HERO_G : HERO_SET;
   if (p.dead) return set.jump;
   if (state === FLAGSEQ && flagAnim && flagAnim.phase === 0) return set.jump;
   if (!p.grounded && state !== FLAGSEQ) return p.vy > 1.5 ? set.fall : set.jump;
@@ -984,7 +985,7 @@ function renderTitle() {
     ctx.drawImage(TILES.groundFill, x, gx + T);
   }
   const bob = Math.sin(frame / 30) * 2;            // hero + goomba cameo
-  ctx.drawImage(HERO.idle, 40, Math.floor(gx - 78 + bob), 48, 78);
+  ctx.drawImage(HERO_SET.idle, 40, Math.floor(gx - 78 + bob), 48, 78);
   const gx2 = 330 + Math.sin(frame / 90) * 60;
   ctx.drawImage(GOOMBA_F[Math.floor(frame / 12) % 2], Math.floor(gx2), gx - 16);
 

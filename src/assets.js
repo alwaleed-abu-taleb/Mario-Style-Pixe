@@ -229,8 +229,7 @@ function bakeHeroSet(p) {
     jump: bakeHeroFrame(BODY_JUMP, p), fall: bakeHeroFrame(BODY_FALL, p),
   };
 }
-const HERO = bakeHeroSet(PAL);
-const HERO_G = bakeHeroSet(PAL_GOLD);
+const HERO_G = bakeHeroSet(PAL_GOLD);   // star-flash variant (base set lives in character-data.js)
 const HEAD_ICON = bakeMap([
 ".HHHHHH.",
 "HHHHHHHH",
