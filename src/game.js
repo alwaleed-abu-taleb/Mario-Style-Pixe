@@ -987,11 +987,8 @@ function renderTitle() {
     ctx.drawImage(TILES.groundTop, x, gx);
     ctx.drawImage(TILES.groundFill, x, gx + T);
   }
-  const bob = Math.sin(frame / 30) * 2;            // hero + goomba cameo
+  const bob = Math.sin(frame / 30) * 2;            // hero cameo
   ctx.drawImage(HERO_SET.idle, 40, Math.floor(gx - 78 + bob), 48, 78);
-  const gx2 = 330 + Math.sin(frame / 90) * 60;
-  const gWalk = (MONSTER_SPRITES.goomba || {}).walk || GOOMBA_F;   // cameo follows custom colors
-  ctx.drawImage(gWalk[Math.floor(frame / 12) % 2], Math.floor(gx2), gx - 16);
 
   // giant bouncing logo, letter by letter
   const logo = "PIXEL HERO";
@@ -1018,6 +1015,8 @@ function renderTitle() {
   }
   ctx.fillStyle = "rgba(0,0,0,0.25)"; ctx.fillRect(0, VH - 16, VW, 16);
   text(ctx, "MUSHROOM: 1UP   STAR: INVINCIBLE   SHIELD: BLOCKS A HIT", VW / 2 - 175, VH - 11, 1, PAL.white, PAL.black);
+
+  drawPreviewPanel();   // live hero + monster preview (bottom-right)
 }
 
 // ------------------------------------------------------------------ main loop
