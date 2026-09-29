@@ -175,6 +175,7 @@ function mkPlant(x, y)  { return { x: x * T + 9, topY: y * T, h: 0, state: 0, t:
 function startGame() {
   score = 0; lives = 3; coinCount = 0;
   applyCharacterData(CharacterData);
+  applyMonsterData(MonsterData);
   loadLevel(0);
   state = PLAY; paused = false;
   musicReset();
@@ -784,10 +785,12 @@ function render() {
   for (const en of enemies) {
     if (!en.active) continue;
     if (en.kind === "goomba") {
-      if (en.dead && en.squashT > 0) drawSpriteC(GOOMBA_SQ, en.x - 2, en.y + en.h - 6, false);
-      else if (!en.dead) drawSpriteC(GOOMBA_F[Math.floor(en.animT / 12) % 2], en.x - 2, en.y + en.h - 16, false);
+      const g = MONSTER_SPRITES.goomba;          // custom colors if applied, else defaults
+      if (en.dead && en.squashT > 0) drawSpriteC(g ? g.sq : GOOMBA_SQ, en.x - 2, en.y + en.h - 6, false);
+      else if (!en.dead) drawSpriteC((g ? g.walk : GOOMBA_F)[Math.floor(en.animT / 12) % 2], en.x - 2, en.y + en.h - 16, false);
     } else {
-      drawSpriteC(KOOPA_F[Math.floor(en.animT / 10) % 2], en.x - 2, en.y + en.h - 20, en.dead);
+      const k = MONSTER_SPRITES.koopa;
+      drawSpriteC((k ? k.walk : KOOPA_F)[Math.floor(en.animT / 10) % 2], en.x - 2, en.y + en.h - 20, en.dead);
       if (en.hesitate > 0)
         text(ctx, "!", Math.floor(en.x + 4 - camX), Math.floor(en.y - 12), 1, PAL.goldL, PAL.black);
     }
@@ -987,7 +990,8 @@ function renderTitle() {
   const bob = Math.sin(frame / 30) * 2;            // hero + goomba cameo
   ctx.drawImage(HERO_SET.idle, 40, Math.floor(gx - 78 + bob), 48, 78);
   const gx2 = 330 + Math.sin(frame / 90) * 60;
-  ctx.drawImage(GOOMBA_F[Math.floor(frame / 12) % 2], Math.floor(gx2), gx - 16);
+  const gWalk = (MONSTER_SPRITES.goomba || {}).walk || GOOMBA_F;   // cameo follows custom colors
+  ctx.drawImage(gWalk[Math.floor(frame / 12) % 2], Math.floor(gx2), gx - 16);
 
   // giant bouncing logo, letter by letter
   const logo = "PIXEL HERO";

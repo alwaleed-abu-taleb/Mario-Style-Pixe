@@ -278,15 +278,16 @@ const GOOMBA_WALK = [[
 "..KKKK....KKKK..",
 ]];
 const GOOMBA_PAL = { B: PAL.goomba, C: PAL.face, W: PAL.white, K: PAL.black, D: PAL.goombaD };
-const GOOMBA_F = GOOMBA_WALK.map(m => bakeMap(m, GOOMBA_PAL));
-const GOOMBA_SQ = bakeMap([
+let GOOMBA_F = GOOMBA_WALK.map(m => bakeMap(m, GOOMBA_PAL));   // let: re-bakeable via applyMonsterData
+const GOOMBA_SQ_MAP = [
 "....BBBBBBBB....",
 "..BBBBBBBBBBBB..",
 ".BBKWWBBBBWWKBB.",
 "BBCCCCCCCCCCCCBB",
 "KKKKKKK..KKKKKKK",
 "KKKKK......KKKKK",
-], GOOMBA_PAL);
+];
+const GOOMBA_SQ = bakeMap(GOOMBA_SQ_MAP, GOOMBA_PAL);
 
 // ----- koopa -----
 const KOOPA_PAL = { Y: PAL.cream, G: PAL.koopa, g: PAL.koopaD, C: PAL.rim, W: PAL.white, K: PAL.black };
@@ -309,9 +310,13 @@ const KOOPA_TOP = [
 "....CCCCCCCC....",
 "...CCCCCCCC.....",
 ];
-const KOOPA_F = [
-  bakeMap(KOOPA_TOP.concat(["...YYY....YYY...", "...YYY....YYY...", "..YYYY....YYYY.."]), KOOPA_PAL),
-  bakeMap(KOOPA_TOP.concat(["...YYY....YYY...", "....YYY..YYY....", "....YYYY.YYY...."]), KOOPA_PAL),
+const KOOPA_LEGS = [
+  ["...YYY....YYY...", "...YYY....YYY...", "..YYYY....YYYY.."],
+  ["...YYY....YYY...", "....YYY..YYY....", "....YYYY.YYY...."],
+];
+let KOOPA_F = [
+  bakeMap(KOOPA_TOP.concat(KOOPA_LEGS[0]), KOOPA_PAL),
+  bakeMap(KOOPA_TOP.concat(KOOPA_LEGS[1]), KOOPA_PAL),
 ];
 
 // ----- piranha plant (in pipes) -----

@@ -28,3 +28,43 @@ function applyCharacterData(data) {
   HERO_SET = bakeHeroSet(pal);
   return HERO_SET;
 }
+
+// ------------------------------------------------------------------ monster data
+// Data-driven enemy appearance, mirroring the hero interface above. Each kind
+// keeps its own color state; applyMonsterData() re-bakes that kind's frames
+// into MONSTER_SPRITES. Kinds absent from MONSTER_SPRITES fall back to the
+// default sprites in game.js.
+const MonsterData = {
+  type: "goomba",                    // "goomba" | "koopa"
+  colors: { body: PAL.goomba, face: PAL.face, dark: PAL.goombaD, eyes: PAL.black },
+};
+
+// current color state per kind, seeded from PAL (applyMonsterData merges into it)
+let MONSTER_PALETTES = {
+  goomba: { body: PAL.goomba, face: PAL.face,  dark: PAL.goombaD, eyes: PAL.black },
+  koopa:  { body: PAL.koopa,  face: PAL.cream, dark: PAL.koopaD,  eyes: PAL.black },
+};
+
+// baked frames per kind: goomba { walk:[2], sq }, koopa { walk:[2] }
+let MONSTER_SPRITES = {};
+
+function applyMonsterData(data) {
+  const type = data && data.type === "koopa" ? "koopa" : "goomba";
+  const c = MONSTER_PALETTES[type];
+  Object.assign(c, (data && data.colors) || {});
+  if (type === "goomba") {
+    const pal = { B: c.body, C: c.face, D: c.dark, K: c.eyes, W: PAL.white };
+    MONSTER_SPRITES.goomba = {
+      walk: GOOMBA_WALK.map(m => bakeMap(m, pal)),
+      sq:   bakeMap(GOOMBA_SQ_MAP, pal),
+    };
+  } else {
+    const pal = { Y: c.face, G: c.body, g: c.dark, K: c.eyes, C: PAL.rim, W: PAL.white };
+    MONSTER_SPRITES.koopa = {
+      walk: [ bakeMap(KOOPA_TOP.concat(KOOPA_LEGS[0]), pal),
+              bakeMap(KOOPA_TOP.concat(KOOPA_LEGS[1]), pal) ],
+    };
+  }
+  return MONSTER_SPRITES[type];
+}
+applyMonsterData(MonsterData);   // goomba live with default colors; koopa stays on defaults
